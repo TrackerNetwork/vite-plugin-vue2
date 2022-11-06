@@ -130,9 +130,16 @@ var __component__ = /*#__PURE__*/__normalizer(
     )
   }
 
-  // SSR module registration by wrapping user setup
+  // SSR module registration by injecting beforeCreate
   if (ssr) {
-    // TODO
+    const id = JSON.stringify(descriptor.id)
+    output.push(`
+    import { useSSRContext } from "vue";
+    __component__.options.beforeCreate = function() {
+      const ctx = useSSRContext();
+      ctx._registeredComponents.push(${id});
+    };
+    `)
   }
 
   let resolvedMap: RawSourceMap | undefined = scriptMap
